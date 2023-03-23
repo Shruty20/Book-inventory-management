@@ -8,7 +8,7 @@ class mysqlConfiguration():
          self.myCon = mysql.connector.connect(
               host="localhost",
               user="root",
-              password="shrusql@20")
+              password=" ")
          return self.myCon
      
      def create_database(self,db):
