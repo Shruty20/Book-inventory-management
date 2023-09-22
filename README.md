@@ -1,4 +1,4 @@
-# Book-inventory-management
+# Book-Inventory-Management
 
 This repository contains a simple Book Inventory Management System implemented in Python using the Tkinter library for the graphical user interface (GUI) and MySQL for the database backend. The application allows users to add, update, delete, and view books in their inventory.
 
