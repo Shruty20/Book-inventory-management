@@ -1,6 +1,6 @@
 from tkinter import*
 import tkinter.font as font
-import mysql.connector 
+import mysql.connector
 class mysqlConfiguration():
      def __init__(self):
          print('constructor')
@@ -10,19 +10,19 @@ class mysqlConfiguration():
               user="root",
               password=" ")
          return self.myCon
-     
+
      def create_database(self,db):
-         mysqlobj = self.connect()
-         cursor = mysqlobj.cursor()
-         cursor.execute("create database " +db)
-         cursor.execute("show Databases")
-         records=cursor.fetchall()
-         print('List of Databases present: ')
-         print('-' * 20)
-         for r in records:
-             print(r)
-             print('-' * 20)
-         cursor.close()
+        mysqlobj = self.connect()
+        cursor = mysqlobj.cursor()
+        cursor.execute("SHOW DATABASES LIKE %s", (db,))
+        db_exists = cursor.fetchone()
+        if not db_exists:
+            cursor.execute("CREATE DATABASE " + db)
+            print("Database created:", db)
+        else:
+            print("Database already exists:", db)
+
+        cursor.close()
 
      def close_connection(self):
           mysqlobj=self.connect()
@@ -31,16 +31,21 @@ class mysqlConfiguration():
           print('connection closed successfully')
 
      def create_table(self,db,table):
-         mysqlobj=self.connect()
-         cur=mysqlobj.cursor()
-         cur.execute("Use " +db)
-         print('Using Database ',db)
-         cur.execute("create table if not exists " +table+ " (id\
-                     INTEGER(100) NOT NULL AUTO_INCREMENT PRIMARY KEY,\
-                     title text,author text,year integer,isbn integer)")
-         print('table created successfully')
-         cur.close()
-     
+        mysqlobj=self.connect()
+        cur=mysqlobj.cursor()
+        cur.execute("Use " +db)
+        print('Using Database ',db)
+        cur.execute("SHOW TABLES LIKE %s", (table,))
+        table_exists = cur.fetchone()
+        if not table_exists:
+            cur.execute("CREATE TABLE " + table + " (id\
+                         INTEGER(100) NOT NULL AUTO_INCREMENT PRIMARY KEY,\
+                         title text,author text,year integer,isbn integer)")
+            print('Table created:', table)
+        else:
+            print('Table already exists:', table)
+        cur.close()
+
 
 
 class bookInventoryOperations(mysqlConfiguration):
@@ -165,6 +170,8 @@ class bookInventoryOperations(mysqlConfiguration):
 class  DisplayGUI(bookInventoryOperations):
      def __init__(self):
          window=Tk()
+         window.title("Book Inventory Management")
+
 
          self.l1 = Label(window,text ="Title", font='BOLD')
          self.l1.grid(row=0, column=0)
@@ -236,6 +243,8 @@ if __name__=='__main__':
     conobj.create_table(db= "Books_db", table="book")
     DisplayGUI()
     conobj.close_connection()
+    
+
     
                       
         
